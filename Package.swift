@@ -5,19 +5,33 @@ import PackageDescription
 
 let package = Package(
     name: "TomorrowWeather",
+    platforms: [
+        .iOS(.v17),
+        // TODO: Add more platforms when everything works on iOS
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "TomorrowWeather",
-            targets: ["TomorrowWeather"]),
+            targets: ["TomorrowWeather"]
+        ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
+        // Public
         .target(
-            name: "TomorrowWeather"),
+            name: "TomorrowWeather",
+            dependencies: ["Networking"]
+        ),
         .testTarget(
             name: "TomorrowWeatherTests",
-            dependencies: ["TomorrowWeather"]),
+            dependencies: ["TomorrowWeather"]
+        ),
+        // Internal
+        .target(
+            name: "Networking"
+        ),
+        .testTarget(
+            name: "NetworkingTests",
+            dependencies: ["Networking"]
+        ),
     ]
 )
