@@ -19,7 +19,7 @@ final class WeatherForecastServiceTests: XCTestCase {
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, responseData, nil)
         }
-        let service = WeatherForecastService(baseURL: url, urlSession: .testableSession())
+        let service = WeatherForecastService(baseURL: url, apiKey: "", urlSession: .testableSession())
         let result = try await service.fetchForecast(for: CLLocationCoordinate2D(latitude: 42.3478, longitude: -71.0466), timestep: .daily)
         XCTAssertEqual(result.timelines.daily.count, 6)
         XCTAssertEqual(result.timelines.daily[0].values.temperatureMin, 1.13, accuracy: 0.1)

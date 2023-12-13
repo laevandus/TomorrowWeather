@@ -23,6 +23,8 @@ package protocol DailyValue {
 }
 
 package final class DailyWeatherStore {
+    package init() {}
+
     private var container: PersistenceConteiner?
 
     // FIXME: Setup should be moved to somewhere else

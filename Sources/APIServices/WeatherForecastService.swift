@@ -10,14 +10,17 @@ import Foundation
 import Networking
 
 package final class WeatherForecastService {
+    let apiKey: String
     let baseURL: URL
     let urlSession: URLSession
 
-    package convenience init(baseURL: URL) {
-        self.init(baseURL: baseURL, urlSession: .apiServices)
+    package convenience init(apiKey: String) {
+        let baseURL = URL(string: "https://api.tomorrow.io")!
+        self.init(baseURL: baseURL, apiKey: apiKey, urlSession: .apiServices)
     }
 
-    init(baseURL: URL, urlSession: URLSession) {
+    init(baseURL: URL, apiKey: String, urlSession: URLSession) {
+        self.apiKey = apiKey
         self.baseURL = baseURL
         self.urlSession = urlSession
     }
@@ -28,7 +31,7 @@ package final class WeatherForecastService {
         decoder.dateDecodingStrategy = .iso8601
         let endpoint = HTTPEndpoint<Forecast>(jsonResponseURL: url,
                                               query: [
-                                                "apikey": APIServices.apiKey,
+                                                "apikey": apiKey,
                                                 "location": location.forecastQueryParameterValue,
                                                 "timesteps": timestep.rawValue,
                                               ],
@@ -46,20 +49,26 @@ extension WeatherForecastService {
 
 extension WeatherForecastService {
     package struct Forecast: Decodable {
-        let timelines: Timelines
+        package let timelines: Timelines
+        package let location: Location
 
-        struct Timelines: Decodable {
-            let daily: [Forecast]
+        package struct Timelines: Decodable {
+            package let daily: [Forecast]
 
-            struct Forecast: Decodable {
-                let time: Date
-                let values: Values
+            package struct Forecast: Decodable {
+                package let time: Date
+                package let values: Values
 
-                struct Values: Decodable {
-                    let temperatureMin: Double
-                    let temperatureMax: Double
+                package struct Values: Decodable {
+                    package let temperatureMin: Double
+                    package let temperatureMax: Double
                 }
             }
+        }
+
+        package struct Location: Decodable {
+            package let lat: Double
+            package let lon: Double
         }
     }
 }

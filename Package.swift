@@ -19,7 +19,10 @@ let package = Package(
         // Public
         .target(
             name: "TomorrowWeather",
-            dependencies: ["Networking"]
+            dependencies: [
+                "APIServices",
+                "Persistence"
+            ]
         ),
         .testTarget(
             name: "TomorrowWeatherTests",

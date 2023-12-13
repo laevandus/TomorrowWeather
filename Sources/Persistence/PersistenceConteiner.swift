@@ -13,7 +13,7 @@ import Foundation
 @dynamicMemberLookup final class PersistenceConteiner {
     let container: NSPersistentContainer
 
-    init(inMemory: Bool = false) {
+    package init(inMemory: Bool = false) {
         let modelURL = Bundle.module.url(forResource: "DataModel", withExtension: "momd")!
         let model = NSManagedObjectModel(contentsOf: modelURL)!
         container = NSPersistentContainer(name: "DataModel", managedObjectModel: model)
