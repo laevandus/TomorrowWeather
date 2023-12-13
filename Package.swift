@@ -27,6 +27,17 @@ let package = Package(
         ),
         // Internal
         .target(
+            name: "APIServices",
+            dependencies: ["Networking"]
+        ),
+        .testTarget(
+            name: "APIServicesTests",
+            dependencies: ["APIServices"],
+            resources: [
+                .copy("TestData/ForecastDaily.json")
+            ]
+        ),
+        .target(
             name: "Networking"
         ),
         .testTarget(
