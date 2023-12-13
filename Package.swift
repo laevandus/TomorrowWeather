@@ -38,6 +38,13 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Persistence"
+        ),
+        .testTarget(
+            name: "PersistenceTests",
+            dependencies: ["Persistence"]
+        ),
+        .target(
             name: "Networking"
         ),
         .testTarget(
