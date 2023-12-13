@@ -11,7 +11,7 @@ import Foundation
 import Persistence
 
 /// Provides an interface for obtaining weather data.
-public final class TomorrowWeather {
+@Observable public final class TomorrowWeather {
     private let service: WeatherForecastService
     private let store: DailyWeatherStore
 
@@ -24,8 +24,10 @@ public final class TomorrowWeather {
     /// Returns the weather forecast for the requested location.
     public func weather(for location: CLLocationCoordinate2D) async throws -> Weather {
         // TODO: Revisit this but keep it simple for now by trying to fetch, if fails, try offline.
+        // TODO: Review if it makes sense to cache on the SDK level or leave the caching for apps instead
         do {
             let forecastPayload = try await service.fetchForecast(for: location)
+            await store.storeForecast(forecastPayload, location: location)
             return Weather(data: forecastPayload)
         }
         catch {
@@ -50,6 +52,10 @@ public struct Weather {
     public let dailyForecast: [DayWeather]
 }
 
+extension Weather: Identifiable {
+    public var id: String { "lat: \(location.latitude) lon:\(location.longitude)" }
+}
+
 /// A structure that represents the weather conditions for the day.
 public struct DayWeather {
     /// The start time of the day weather.
@@ -58,6 +64,10 @@ public struct DayWeather {
     public let lowTemperature: Double
     /// The daytime high temperature.
     public let highTemperature: Double
+}
+
+extension DayWeather: Identifiable {
+    public var id: Date { date }
 }
 
 // MARK: - Mapping
@@ -80,5 +90,27 @@ extension Weather {
                        lowTemperature: data.temperatureMin,
                        highTemperature: data.temperatureMax)
         })
+    }
+}
+
+extension WeatherForecastService.Forecast: DailyForecast {
+    package var latitude: Double {
+        location.lat
+    }
+    
+    package var longitude: Double {
+        location.lon
+    }
+    
+    package var dailyValues: [DailyValue] {
+        struct Item: DailyValue {
+            let temperatureMax: Double
+            let temperatureMin: Double
+            let date: Date
+        }
+
+        return timelines.daily.map { data in
+            Item(temperatureMax: data.values.temperatureMax, temperatureMin: data.values.temperatureMin, date: data.time)
+        }
     }
 }
